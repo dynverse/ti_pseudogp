@@ -1,6 +1,6 @@
 id: pseudogp
-docker_repository: dynverse/dynmethods:pseudogp
-container_url: https://github.com/dynverse/dynmethods/tree/master/containers/pseudogp
+docker_repository: dynverse/ti_pseudogp
+container_url: https://github.com/dynverse/ti_pseudogp
 name: pseudogp
 type: algorithm
 platform: R
