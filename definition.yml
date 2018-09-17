@@ -3,7 +3,7 @@ docker_repository: dynverse/ti_pseudogp
 singularity_collection: 1570
 container_url: https://github.com/dynverse/ti_pseudogp
 name: pseudogp
-type: algorithm
+source: tool
 platform: R
 doi: 10.1371/journal.pcbi.1005212
 google_scholar_cluster_id: '5243569616386453833'
