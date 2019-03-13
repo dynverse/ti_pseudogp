@@ -1,3 +1,7 @@
+#!/usr/local/bin/Rscript
+
+task <- dyncli::main()
+
 library(jsonlite)
 library(readr)
 library(dplyr)
@@ -11,23 +15,14 @@ library(dyndimred)
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-data <- read_rds("/ti/input/data.rds")
-params <- jsonlite::read_json("/ti/input/params.json")
-
-#' @examples
-#' data <- dyntoy::generate_dataset(id = "test", num_cells = 300, num_features = 300, model = "linear") %>% c(., .$prior_information)
-#' params <- yaml::read_yaml("containers/pseudogp/definition.yml")$parameters %>%
-#'   {.[names(.) != "forbidden"]} %>%
-#'   map(~ .$default)
-
-expression <- data$expression
+params <- task$params
+expression <- as.matrix(task$expression)
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
 
 # perform dimreds
-dimred_names <- names(dyndimred::list_dimred_methods())
-dimred_names <- dimred_names[which(as.logical(params$dimreds))] # 'which()' is to ensure when new dimreds are added, they simply get left out
+dimred_names <- params$dimreds
 spaces <- map(dimred_names, ~ dyndimred::dimred(expression, method = ., ndim = 2)) # only 2 dimensions per dimred are allowed
 
 # TIMING: done with preproc
@@ -64,4 +59,7 @@ output <- lst(
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-write_rds(output, "/ti/output/output.rds")
+dynwrap::wrap_data(cell_ids = names(pseudotime)) %>%
+  dynwrap::add_linear_trajectory(pseudotime = pseudotime) %>%
+  dynwrap::add_timings(checkpoints) %>%
+  dyncli::write_output(task$output)
