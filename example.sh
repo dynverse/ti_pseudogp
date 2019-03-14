@@ -3,7 +3,7 @@
 # generate dataset with certain seed
 set.seed(1)
 data <- dyntoy::generate_dataset(
-  id = "specific_example/template",
+  id = "specific_example/pseudogp",
   num_cells = 30,
   num_features = 40,
   model = "tree",

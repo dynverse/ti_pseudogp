@@ -28,14 +28,10 @@ container:
   docker: dynverse/ti_pseudogp
 
 wrapper:
-  type: linear
+  type: linear_trajectory
   topology_inference: fixed
-  trajectory_types:
-  - linear
-  example: /code/example.R
-  input_required:
-  - expression
-
+  trajectory_types: linear
+  input_required: expression
 
 parameters:
   - id: smoothing_alpha
