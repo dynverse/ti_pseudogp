@@ -86,9 +86,7 @@ parameters:
     type: subset
     values: ['pca', 'mds', 'tsne', 'ica', 'lle', 'landmark_mds', 'mds_sammon', 'mds_isomds', 'mds_smacof', 'umap', 'dm_diffusionmap', 'dm_destiny']
     default: ['pca', 'mds']
-    description: |-
-      A character vector specifying which dimensionality reduction methods to use.
-      See `dyndimred::dimred()` for the list of available dimensionality reduction methods.
+    description: A character vector specifying which dimensionality reduction methods to use. See `dyndimred::dimred()` for the list of available dimensionality reduction methods.
   - id: initialise_from
     type: character
     default: random
