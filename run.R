@@ -15,14 +15,14 @@ library(dyndimred)
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-params <- task$params
+parameters <- task$parameters
 expression <- as.matrix(task$expression)
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
 
 # perform dimreds
-dimred_names <- params$dimreds
+dimred_names <- parameters$dimreds
 spaces <- map(dimred_names, ~ dyndimred::dimred(expression, method = ., ndim = 2)) # only 2 dimensions per dimred are allowed
 
 # TIMING: done with preproc
@@ -31,13 +31,13 @@ checkpoints <- list(method_afterpreproc = as.numeric(Sys.time()))
 # fit probabilistic pseudotime model
 fit <- pseudogp::fitPseudotime(
   X = spaces,
-  smoothing_alpha = params$smoothing_alpha,
-  smoothing_beta = params$smoothing_beta,
-  iter = params$iter,
-  chains = params$chains,
-  initialise_from = params$initialise_from,
-  pseudotime_var = params$pseudotime_var,
-  pseudotime_mean = params$pseudotime_mean
+  smoothing_alpha = parameters$smoothing_alpha,
+  smoothing_beta = parameters$smoothing_beta,
+  iter = parameters$iter,
+  chains = parameters$chains,
+  initialise_from = parameters$initialise_from,
+  pseudotime_var = parameters$pseudotime_var,
+  pseudotime_mean = parameters$pseudotime_mean
 )
 
 # TIMING: done with method
