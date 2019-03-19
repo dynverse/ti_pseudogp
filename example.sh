@@ -11,7 +11,7 @@ data <- dyntoy::generate_dataset(
 )
 
 # add method specific args (if needed)
-data$params <- list(iter = 10)
+data$parameters <- list(iter = 10)
 
 data$seed <- 1
 
