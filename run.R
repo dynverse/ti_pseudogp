@@ -1,33 +1,26 @@
-library(jsonlite)
-library(readr)
-library(dplyr)
-library(purrr)
+#!/usr/local/bin/Rscript
 
-library(rstan)
-library(coda)
-library(MCMCglmm)
-library(dyndimred)
+task <- dyncli::main()
+
+library(dplyr, warn.conflicts = FALSE)
+library(purrr, warn.conflicts = FALSE)
+
+library(rstan, warn.conflicts = FALSE)
+library(coda, warn.conflicts = FALSE)
+library(MCMCglmm, warn.conflicts = FALSE)
+library(dyndimred, warn.conflicts = FALSE)
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-data <- read_rds("/ti/input/data.rds")
-params <- jsonlite::read_json("/ti/input/params.json")
-
-#' @examples
-#' data <- dyntoy::generate_dataset(id = "test", num_cells = 300, num_features = 300, model = "linear") %>% c(., .$prior_information)
-#' params <- yaml::read_yaml("containers/pseudogp/definition.yml")$parameters %>%
-#'   {.[names(.) != "forbidden"]} %>%
-#'   map(~ .$default)
-
-expression <- data$expression
+parameters <- task$parameters
+expression <- task$expression
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
 
 # perform dimreds
-dimred_names <- names(dyndimred::list_dimred_methods())
-dimred_names <- dimred_names[which(as.logical(params$dimreds))] # 'which()' is to ensure when new dimreds are added, they simply get left out
+dimred_names <- parameters$dimreds
 spaces <- map(dimred_names, ~ dyndimred::dimred(expression, method = ., ndim = 2)) # only 2 dimensions per dimred are allowed
 
 # TIMING: done with preproc
@@ -36,13 +29,13 @@ checkpoints <- list(method_afterpreproc = as.numeric(Sys.time()))
 # fit probabilistic pseudotime model
 fit <- pseudogp::fitPseudotime(
   X = spaces,
-  smoothing_alpha = params$smoothing_alpha,
-  smoothing_beta = params$smoothing_beta,
-  iter = params$iter,
-  chains = params$chains,
-  initialise_from = params$initialise_from,
-  pseudotime_var = params$pseudotime_var,
-  pseudotime_mean = params$pseudotime_mean
+  smoothing_alpha = parameters$smoothing_alpha,
+  smoothing_beta = parameters$smoothing_beta,
+  iter = parameters$iter,
+  chains = parameters$chains,
+  initialise_from = parameters$initialise_from,
+  pseudotime_var = parameters$pseudotime_var,
+  pseudotime_mean = parameters$pseudotime_mean
 )
 
 # TIMING: done with method
@@ -64,4 +57,7 @@ output <- lst(
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-write_rds(output, "/ti/output/output.rds")
+dynwrap::wrap_data(cell_ids = names(pseudotime)) %>%
+  dynwrap::add_linear_trajectory(pseudotime = pseudotime) %>%
+  dynwrap::add_timings(checkpoints) %>%
+  dyncli::write_output(task$output)

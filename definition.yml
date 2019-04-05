@@ -1,76 +1,94 @@
-id: pseudogp
-docker_repository: dynverse/ti_pseudogp
-singularity_collection: 1570
-container_url: https://github.com/dynverse/ti_pseudogp
-name: pseudogp
-source: tool
-platform: R
-doi: 10.1371/journal.pcbi.1005212
-google_scholar_cluster_id: '5243569616386453833'
-trajectory_types: linear
-topology_inference: fixed
-license: MIT
-preprint_date: '2016-04-05'
-publication_date: '2016-11-21'
-code_url: https://github.com/kieranrcampbell/pseudogp
+method:
+  id: pseudogp
+  name: pseudogp
+  tool_id: pseudogp
+  source: tool
+  platform: R
+  url: https://github.com/kieranrcampbell/pseudogp
+  license: MIT
+  authors:
+  - given: Kieran
+    family: Campbell
+    email: kicampbell@bccrc.ca
+    github: kieranrcampbell
+  - given: Christopher
+    family: Yau
+    email: cyau@well.ox.ac.uk
+    ORCID: 0000-0001-7615-8523
+
+
+manuscript:
+  doi: 10.1371/journal.pcbi.1005212
+  google_scholar_cluster_id: '5243569616386453833'
+  preprint_date: '2016-04-05'
+  publication_date: '2016-11-21'
+
+container:
+  url: https://github.com/dynverse/ti_pseudogp
+  docker: dynverse/ti_pseudogp
+
+wrapper:
+  type: linear_trajectory
+  topology_inference: fixed
+  trajectory_types: linear
+  input_required: expression
+
 parameters:
-  smoothing_alpha:
+  - id: smoothing_alpha
     type: numeric
     default: 10.0
-    upper: 20.0
-    lower: 1.0
+    distribution:
+      type: uniform
+      upper: 20.0
+      lower: 1.0
     description: The hyperparameter for the Gamma distribution that controls arc-length
-  smoothing_beta:
+  - id: smoothing_beta
     type: numeric
     default: 3.0
-    upper: 20.0
-    lower: 1.0
+    distribution:
+      type: uniform
+      upper: 20.0
+      lower: 1.0
     description: The hyperparameter for the Gamma distribution that controls arc-length
-  pseudotime_mean:
+  - id: pseudotime_mean
     type: numeric
     default: 0.5
-    upper: 1.0
-    lower: 0.0e+00
+    distribution:
+      type: uniform
+      upper: 1.0
+      lower: 0.0e+00
     description: The mean of the constrained normal prior on the pseudotimes
-  pseudotime_var:
+  - id: pseudotime_var
     type: numeric
     default: 1.0
-    upper: 1.0
-    lower: 0.01
+    distribution:
+      type: uniform
+      upper: 1.0
+      lower: 0.01
     description: The variance of the constrained normal prior on the pseudotimes
-  chains:
+  - id: chains
     type: integer
     default: 3
-    upper: 20
-    lower: 1
+    distribution:
+      type: uniform
+      upper: 20
+      lower: 1
     description: The number of chains for the MCMC trace
-  iter:
+  - id: iter
     type: integer
     default: 100
-    upper: 1000
-    lower: 100
+    distribution:
+      type: expuniform
+      upper: 1000
+      lower: 100
     description: The number of iterations for the MCMC trace
-    distribution: expuniform
-  dimreds:
-    type: logical_vector
-    default:
-    - yes
-    - yes
-    - no
-    - no
-    - no
-    - no
-    - no
-    - no
-    - no
-    - no
-    - no
-    length: 11
-    description: |-
-      A character vector specifying which dimensionality reduction methods to use.
-      See \code{\link[dyndimred:dimred]{dyndimred::dimred}} for the list of available dimensionality reduction methods.
-  initialise_from:
-    type: discrete
+  - id: dimreds
+    type: subset
+    values: ['pca', 'mds', 'tsne', 'ica', 'lle', 'landmark_mds', 'mds_sammon', 'mds_isomds', 'mds_smacof', 'umap', 'dm_diffusionmap', 'dm_destiny']
+    default: ['pca', 'mds']
+    description: A character vector specifying which dimensionality reduction methods to use. See `dyndimred::dimred()` for the list of available dimensionality reduction methods.
+  - id: initialise_from
+    type: character
     default: random
     values:
     - random
@@ -79,24 +97,6 @@ parameters:
     description: |-
       How to initialise the MCMC chain. One of "random" (stan decides),
       "principal_curve", or "pca" (the first component of PCA rescaled is taken to be the pseudotimes).
-      Note: if multiple representations are provided, \code{pseudogp} will take the principal curve or
+      Note: if multiple representations are provided, `pseudogp` will take the principal curve or
       pca from the first rather than combining them. If a particular representation is required, it is
       up to the user to re-order them.
-input:
-  format: rds
-  required: expression
-output:
-  format: rds
-  outputs:
-  - linear_trajectory
-  - timings
-wrapper_type: linear_trajectory
-authors:
-- given: Kieran
-  family: Campbell
-  email: kicampbell@bccrc.ca
-  github: kieranrcampbell
-- given: Christopher
-  family: Yau
-  email: cyau@well.ox.ac.uk
-  ORCID: 0000-0001-7615-8523
