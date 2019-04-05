@@ -2,21 +2,19 @@
 
 task <- dyncli::main()
 
-library(jsonlite)
-library(readr)
-library(dplyr)
-library(purrr)
+library(dplyr, warn.conflicts = FALSE)
+library(purrr, warn.conflicts = FALSE)
 
-library(rstan)
-library(coda)
-library(MCMCglmm)
-library(dyndimred)
+library(rstan, warn.conflicts = FALSE)
+library(coda, warn.conflicts = FALSE)
+library(MCMCglmm, warn.conflicts = FALSE)
+library(dyndimred, warn.conflicts = FALSE)
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
 parameters <- task$parameters
-expression <- as.matrix(task$expression)
+expression <- task$expression
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
